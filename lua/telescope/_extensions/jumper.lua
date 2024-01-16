@@ -21,7 +21,7 @@ local function jump(opts)
     local ls = previewers.new_termopen_previewer({
         title = "Contents",
         get_command = function(entry)
-            return { 'ls', entry[1] }
+            return { 'ls',  '-1UpC', '--color=always', entry[1] }
         end
     })
 
