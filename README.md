@@ -8,6 +8,7 @@ For Lazy.nvim, use:
 ```lua
 {
     "homerours/telescope-jumper",
+    dependencies = { 'nvim-telescope/telescope.nvim' },
     config = function()
         local jumper = require("telescope").extensions.jumper
         vim.keymap.set('n', '<c-j>', jumper.jump, {})
