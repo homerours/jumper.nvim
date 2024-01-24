@@ -8,7 +8,9 @@ local previewers = require "telescope.previewers"
 
 
 local jumpfile = os.getenv("jumpfile")
+local jumpfile_files = os.getenv("jumpfile_files")
 local cmd = vim.tbl_flatten({ "jumper", "-f", jumpfile, "-n", "50" })
+local cmd_files = vim.tbl_flatten({ "jumper", "-f", jumpfile_files, "-n", "50" })
 
 local function jump(opts)
     opts = opts or {}
@@ -21,7 +23,7 @@ local function jump(opts)
     local ls = previewers.new_termopen_previewer({
         title = "Contents",
         get_command = function(entry)
-            return { 'ls',  '-1UpC', '--color=always', entry[1] }
+            return { 'ls', '-1UpC', '--color=always', entry[1] }
         end
     })
 
@@ -40,8 +42,23 @@ local function jump(opts)
     }):find()
 end
 
+local function jump_file(opts)
+    opts = opts or {}
+
+    local jumper_finder = finders.new_job(function(prompt)
+        return vim.tbl_flatten({ cmd_files, prompt })
+    end, make_entry.gen_from_string(), {}, '')
+
+    pickers.new(opts, {
+        prompt_title = "Search files",
+        finder = jumper_finder,
+        sorter = sorters.highlighter_only(opts),
+    }):find()
+end
+
 return require("telescope").register_extension({
     exports = {
         jump = jump,
+        jump_file = jump_file,
     },
 })
