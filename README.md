@@ -13,12 +13,14 @@ For Lazy.nvim, use:
         local jumper = require("telescope").extensions.jumper
         vim.keymap.set('n', '<c-y>', jumper.jump, {})
         vim.keymap.set('n', '<c-u>', jumper.jump_file, {})
+        vim.keymap.set('n', '<leader>fu', jumper.find_in_files, {})
 
         vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
             pattern = { "*" },
             callback = function(ev)
                 local filename = vim.api.nvim_buf_get_name(ev.buf)
-                if not string.find(filename, "/.git") then
+                -- do not log .git files, and buffers opened by plugins (which often contain some ':')
+                if not (string.find(filename, "/.git") or string.find(filename, ":")) then
                     local cmd = 'jumper -f ${jumpfile_files} -a ' .. filename
                     os.execute(cmd)
                 end
@@ -34,6 +36,7 @@ Use `Ctrl-Y` (from the above mapping) to fuzzy-find directories that you frequen
 - On enter, it will `require('telescope.builtin').find_files` in the selected directory. 
 - On `require('telescope.actions').file_edit`, it will `:edit` the selection.
 Use `Ctrl-U` (from the above mapping) to fuzzy-find files that you frequently edit. 
+Use `<leader>fu` (from the above mapping) to Grep the files of jumper's database. 
 
 ## Credits
 - [z](https://github.com/rupa/z)
