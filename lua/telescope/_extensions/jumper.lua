@@ -13,6 +13,12 @@ local jumpfile_files = os.getenv("jumpfile_files")
 local cmd = vim.tbl_flatten({ "jumper", "-f", jumpfile, "-n", "100" })
 local cmd_files = vim.tbl_flatten({ "jumper", "-f", jumpfile_files, "-n", "100" })
 
+local jumper_layout_config = {
+    width = 0.9,
+    height = 0.9,
+    prompt_position = "bottom",
+    preview_cutoff = 220,
+}
 local function jump(opts)
     opts = opts or {}
     local cwd = vim.loop.cwd()
@@ -33,6 +39,7 @@ local function jump(opts)
         finder = jumper_finder,
         sorter = sorters.highlighter_only(opts),
         previewer = ls,
+        layout_config = jumper_layout_config,
         attach_mappings = function(_)
             actions.select_default:replace(function()
                 local entry = actions_state.get_selected_entry()
@@ -51,6 +58,8 @@ local function jump_file(opts)
     pickers.new(opts, {
         prompt_title = "Search files",
         finder = jumper_finder,
+        previewer = conf.grep_previewer(opts),
+        layout_config = jumper_layout_config,
         sorter = sorters.highlighter_only(opts),
     }):find()
 end
@@ -78,8 +87,9 @@ local function find_in_files(opts)
     end, opts.entry_maker or make_entry.gen_from_vimgrep(opts), {}, '')
     pickers.new(opts, {
         prompt_title = "Live Grep",
-        finder = jumper_finder,
+        layout_config = jumper_layout_config,
         previewer = conf.grep_previewer(opts),
+        finder = jumper_finder,
         sorter = sorters.highlighter_only(opts),
     }):find()
 end
