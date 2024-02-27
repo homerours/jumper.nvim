@@ -8,10 +8,10 @@ local previewers = require "telescope.previewers"
 
 local conf = require("telescope.config").values
 
-local jumpfile = os.getenv("jumpfile")
-local jumpfile_files = os.getenv("jumpfile_files")
-local cmd = vim.tbl_flatten({ "jumper", "-f", jumpfile, "-n", "100" })
-local cmd_files = vim.tbl_flatten({ "jumper", "-f", jumpfile_files, "-n", "100" })
+local jump_folders = os.getenv("__JUMPER_FOLDERS")
+local jump_files = os.getenv("__JUMPER_FILES")
+local cmd_folders = vim.tbl_flatten({ "jumper", "-f", jump_folders, "-n", "100"})
+local cmd_files = vim.tbl_flatten({ "jumper", "-f", jump_files, "-n", "100"})
 
 local jumper_layout_config = {
     width = 0.9,
@@ -19,12 +19,12 @@ local jumper_layout_config = {
     prompt_position = "bottom",
     preview_cutoff = 220,
 }
-local function jump(opts)
+local function jump_to_folder(opts)
     opts = opts or {}
     local cwd = vim.loop.cwd()
 
     local jumper_finder = finders.new_job(function(prompt)
-        return vim.tbl_flatten({ cmd, prompt })
+        return vim.tbl_flatten({ cmd_folders, prompt })
     end, make_entry.gen_from_string(), {}, cwd)
 
     local ls = previewers.new_termopen_previewer({
@@ -50,7 +50,7 @@ local function jump(opts)
     }):find()
 end
 
-local function jump_file(opts)
+local function jump_to_file(opts)
     opts = opts or {}
     local jumper_finder = finders.new_job(function(prompt)
         return vim.tbl_flatten({ cmd_files, prompt })
@@ -78,7 +78,7 @@ end
 local function find_in_files(opts)
     opts = opts or {}
     local jumper_finder = finders.new_job(function(prompt)
-        local raw = os_capture("jumper -f ${jumpfile_files} ''", false)
+        local raw = os_capture("jumper -f ${__JUMPER_FILES} ''", false)
         local file_list = {}
         for value in string.gmatch(raw, "([^" .. '\n' .. "]+)") do
             table.insert(file_list, value)
@@ -96,8 +96,8 @@ end
 
 return require("telescope").register_extension({
     exports = {
-        jump = jump,
-        jump_file = jump_file,
+        jump_to_folder = jump_to_folder,
+        jump_to_file = jump_to_file,
         find_in_files = find_in_files,
     },
 })
