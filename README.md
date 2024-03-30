@@ -24,8 +24,9 @@ Use `Ctrl-Y` (from the above mappings) to fuzzy-find directories that you freque
 - On enter, it will `require('telescope.builtin').find_files` in the selected directory. 
 - On `require('telescope.actions').file_edit`, it will `:edit` the selection.
 
-Use `Ctrl-U` (from the above mappings) to fuzzy-find files that you frequently edit. 
-Use `<leader>fu` (from the above mappings) to Grep the files of jumper's database. 
+Use `Ctrl-U` to fuzzy-find files that you frequently edit. 
+
+Use `<leader>fu` to Grep the files of jumper's database. 
 
 Use `:Zf <query>` to open the file matching a given `<query>` or `:Z <query>` to change the current working directory.
 
