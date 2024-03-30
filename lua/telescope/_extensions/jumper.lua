@@ -10,8 +10,8 @@ local conf = require("telescope.config").values
 
 local jump_folders = os.getenv("__JUMPER_FOLDERS")
 local jump_files = os.getenv("__JUMPER_FILES")
-local cmd_folders = vim.tbl_flatten({ "jumper", "-f", jump_folders, "-n", "100"})
-local cmd_files = vim.tbl_flatten({ "jumper", "-f", jump_files, "-n", "100"})
+local cmd_folders = vim.tbl_flatten({ "jumper", "-f", jump_folders, "-n", "100" })
+local cmd_files = vim.tbl_flatten({ "jumper", "-f", jump_files, "-n", "100" })
 
 local jumper_layout_config = {
     width = 0.9,
@@ -93,6 +93,21 @@ local function find_in_files(opts)
         sorter = sorters.highlighter_only(opts),
     }):find()
 end
+
+-- Update database whenever a file is opened
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
+    pattern = { "*" },
+    callback = function(ev)
+        local filename = vim.api.nvim_buf_get_name(ev.buf)
+        if not (string.find(filename, "/.git") or string.find(filename, ":")) then
+            local cmd = "jumper -f ${__JUMPER_FILES} -a '" .. filename .. "'"
+            os.execute(cmd)
+        end
+    end
+})
+
+vim.api.nvim_create_user_command('Z', "cd `jumper -f ${__JUMPER_FOLDERS} -n 1 '<args>'`", {nargs = '+'})
+vim.api.nvim_create_user_command('Zf', "edit `jumper -f ${__JUMPER_FILES} -n 1 '<args>'`", {nargs = '+'})
 
 return require("telescope").register_extension({
     exports = {
