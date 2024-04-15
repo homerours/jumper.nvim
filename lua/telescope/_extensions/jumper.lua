@@ -94,20 +94,37 @@ local function find_in_files(opts)
     }):find()
 end
 
+local function update_database(filename, weight)
+    if not (string.find(filename, "/.git") or string.find(filename, ":")) then
+        local cmd = "jumper -f ${__JUMPER_FILES} -w" .. weight .. " -a '" .. filename .. "'"
+        os.execute(cmd)
+    end
+end
+
 -- Update database whenever a file is opened
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
     pattern = { "*" },
     callback = function(ev)
         local filename = vim.api.nvim_buf_get_name(ev.buf)
-        if not (string.find(filename, "/.git") or string.find(filename, ":")) then
-            local cmd = "jumper -f ${__JUMPER_FILES} -a '" .. filename .. "'"
-            os.execute(cmd)
+        update_database(filename, 1.0)
+    end
+})
+
+-- Update database whenever a file is modified
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+    pattern = { "*" },
+    callback = function(ev)
+        local buf = vim.api.nvim_get_current_buf()
+        local buf_modified = vim.api.nvim_buf_get_option(buf, 'modified')
+        if buf_modified then
+            local filename = vim.api.nvim_buf_get_name(ev.buf)
+            update_database(filename, 0.2)
         end
     end
 })
 
-vim.api.nvim_create_user_command('Z', "cd `jumper -f ${__JUMPER_FOLDERS} -n 1 '<args>'`", {nargs = '+'})
-vim.api.nvim_create_user_command('Zf', "edit `jumper -f ${__JUMPER_FILES} -n 1 '<args>'`", {nargs = '+'})
+vim.api.nvim_create_user_command('Z', "cd `jumper -f ${__JUMPER_FOLDERS} -n 1 '<args>'`", { nargs = '+' })
+vim.api.nvim_create_user_command('Zf', "edit `jumper -f ${__JUMPER_FILES} -n 1 '<args>'`", { nargs = '+' })
 
 return require("telescope").register_extension({
     exports = {
