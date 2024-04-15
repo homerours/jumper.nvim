@@ -35,7 +35,7 @@ local function jump_to_folder(opts)
     })
 
     pickers.new(opts, {
-        prompt_title = "Search",
+        prompt_title = "Directories",
         finder = jumper_finder,
         sorter = sorters.highlighter_only(opts),
         previewer = ls,
@@ -114,8 +114,7 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     pattern = { "*" },
     callback = function(ev)
-        local buf = vim.api.nvim_get_current_buf()
-        local buf_modified = vim.api.nvim_buf_get_option(buf, 'modified')
+        local buf_modified = vim.api.nvim_buf_get_option(ev.buf, 'modified')
         if buf_modified then
             local filename = vim.api.nvim_buf_get_name(ev.buf)
             update_database(filename, 0.2)
