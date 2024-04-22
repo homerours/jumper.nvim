@@ -23,7 +23,7 @@ local function jump_to_directory(opts)
     opts = opts or {}
     opts.exec_empty_query = true
     opts.actions = { default = on_enter[opts.on_enter] }
-    opts.fzf_opts = { ['--preview'] = 'ls -1UpC --color=always {}' }
+    opts.fzf_opts = { ['--preview'] = 'ls -1UpC --color=always {}', ['--keep-right'] = true, ['--ansi'] = true }
     if opts.previewer == false then
         opts.fzf_opts['--preview-window'] = 'hidden'
     end
@@ -36,6 +36,7 @@ local function jump_to_file(opts)
     opts = opts or {}
     opts.exec_empty_query = true
     opts.actions = { ['default'] = fzf.actions.file_edit }
+    opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true }
     opts.previewer = "builtin"
     fzf.fzf_live(
         make_f(opts.jumper_files or jumper.config.jumper_files,
@@ -49,10 +50,6 @@ local function find_in_files(opts)
     opts.previewer = "builtin"
     opts.fn_transform = function(x)
         return fzf.make_entry.file(x, opts)
-    end
-    opts.fn_preprocess = function(o)
-        opts.diff_files = fzf.make_entry.preprocess(o).diff_files
-        return opts
     end
     local file_list = vim.fn.systemlist(jumper.make_command(jumper.config.jumper_files, nil, false, ''))
     local files = " " .. table.concat(file_list, " ")
