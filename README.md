@@ -1,9 +1,9 @@
 # jumper.nvim
 
-This is a Neovim plugin for using [jumper](https://github.com/homerours/jumper). It allows to
-- keep track of the opened files and visited folders, updating Jumper's database.
-- jump with `:Zf <query>` / `:Z <query>` to files and folders matching `<query>`.
-- fuzzy-find Jumper's files and directories using either [Telescope](https://github.com/nvim-telescope/telescope.nvim) or [fzf-lua](https://github.com/ibhagwan/fzf-lua) as backend.
+This is a Neovim plugin for [jumper](https://github.com/homerours/jumper), to quickly jump around files and folders. It allows to
+- keep track of the opened files and visited folders, keeping jumper's database updated.
+- jump with `:Zf <query>` / `:Z <query>` to files / folders matching `<query>`.
+- fuzzy-find jumper's files and directories using either [Telescope](https://github.com/nvim-telescope/telescope.nvim) or [fzf-lua](https://github.com/ibhagwan/fzf-lua) as backend.
 
 ## Installation
 
@@ -31,14 +31,13 @@ For Lazy.nvim, use:
 
 ## Usage
 
-Use `:Zf <query>` to open the file best matching a given `<query>` or `:Z <query>` to change the current working directory.
-
-Jumper then provides 3 "pickers":
+Use the commands `:Zf <query>` to open the file that matches best `<query>` or `:Z <query>` to change the current working directory.
+Then, jumper provides 3 "pickers" in order to interactively find files and folders:
 
 #### `jump_to_directory`
 
-This allows to pick directories from jumper's database. By default, selecting a directory with `enter` will open that directory in the default file explorer (`netrw`, `oil`...). This can be overriden using the `on_enter` entry of the options supplied to the finder:
-- `jumper.jump_to_folder({on_enter = 'find_files'})` will launch a files' search on the selected folder.
+This allows to pick directories from jumper's database. By default, pressing `enter` on a directory will open that directory in the default file explorer (`netrw`, `oil`...). This can be overriden using the `on_enter` key of the options supplied to the finder:
+- `jumper.jump_to_folder({on_enter = 'find_files'})` will launch a files' search in the selected directory.
 - `jumper.jump_to_folder({on_enter = 'change_cwd'})` will update the current working directory to the selected entry.
 
 #### `jump_to_file`
@@ -47,7 +46,7 @@ This allows to open files from jumper's database.
 
 #### `find_in_files`
 
-This allows to "grep" files of jumper's database.
+This allows to "live-grep" the files of jumper's database.
 
 ## Configuration example
 
