@@ -3,7 +3,7 @@
 This is a Neovim plugin for [jumper](https://github.com/homerours/jumper), to quickly jump around files and folders. It allows to
 - keep track of the opened files and visited folders, keeping jumper's database updated.
 - jump with `:Zf <query>` / `:Z <query>` to files / folders matching `<query>`.
-- fuzzy-find jumper's files and directories using either [Telescope](https://github.com/nvim-telescope/telescope.nvim) or [fzf-lua](https://github.com/ibhagwan/fzf-lua) as backend.
+- fuzzy-find jumper's files and directories using either [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim) as backend.
 
 ## Installation
 
@@ -58,9 +58,7 @@ Here is an example of configuration, using Telescope as backend:
     config = function()
         local jumper = require("telescope").extensions.jumper
 
-        vim.keymap.set('n', '<c-y>', function() jumper.jump_to_directory({ on_enter = 'find_files', previewer = false }) end)
-        -- Disable previewer on start, which can be then be turned on with a mapping to
-        -- require('telescope.actions.layout').toggle_preview()
+        vim.keymap.set('n', '<c-y>', function() jumper.jump_to_directory({ on_enter = 'find_files'}) end)
 
         vim.keymap.set('n', '<c-u>', function () jumper.jump_to_file({ previewer = false }) end)
 

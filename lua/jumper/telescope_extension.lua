@@ -18,7 +18,8 @@ local function add_missing(dst, src)
     return dst
 end
 
-local function parse_ascii_colors(line)
+-- parse the colors from jumper's outputs
+local function parse_ansi_colors(line)
     local chunks = {}
     local highlights = {}
     local color = '\x1b[32m'
@@ -44,7 +45,7 @@ local function make_display(entry)
 end
 
 local function entry_maker(line)
-    local path, highlights = parse_ascii_colors(line)
+    local path, highlights = parse_ansi_colors(line)
     return {
         value = path,
         highlights = highlights,
@@ -107,9 +108,15 @@ M.jump_to_file = function(opts)
     end, entry_maker, {}, '')
 
     pickers.new(opts, {
-        prompt_title = "Files",
+        prompt_title = "Files. Ctrl-f to live grep.",
         finder = file_finder,
         previewer = opts.previewer or conf.grep_previewer(opts),
+        attach_mappings = function(_, map)
+            map('i', '<c-f>', function()
+                M.find_in_files({ default_text = opts.grep_query, jumper_query = state.jumper_query })
+            end)
+            return true
+        end,
     }):find()
 end
 
@@ -123,10 +130,21 @@ M.find_in_files = function(opts)
         return vim.tbl_flatten({ conf.vimgrep_arguments, '--', prompt, file_list })
     end, opts.entry_maker or make_entry.gen_from_vimgrep(opts), {}, '')
 
+    local title = "Live grep. Ctrl-f to filter files."
+    if opts.jumper_query ~= nil and opts.jumper_query ~= "" then
+        title = title .. "Current filter: " .. opts.jumper_query
+    end
+
     pickers.new(opts, {
-        prompt_title = "Find in files",
+        prompt_title = title,
         previewer = conf.grep_previewer(opts),
         finder = grep_finder,
+        attach_mappings = function(_, map)
+            map('i', '<c-f>', function()
+                M.jump_to_file({ default_text = opts.jumper_query, grep_query = state.grep_query })
+            end)
+            return true
+        end,
     }):find()
 end
 
