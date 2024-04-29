@@ -1,11 +1,13 @@
 local fzf = require("fzf-lua")
 local jumper = require("jumper")
 
+local saved = {}
+
 local function make_f(database_file, max_results)
-    local cmd_table = jumper.make_command(database_file, max_results, true)
-    local cmd = table.concat(cmd_table, " ") .. " "
     return function(q)
-        return vim.fn.systemlist(cmd .. q)
+        saved.query = q
+        local cmd = jumper.make_command(database_file, max_results, true, q)
+        return vim.fn.systemlist(cmd)
     end
 end
 
@@ -18,8 +20,9 @@ local on_enter = {
     end,
 }
 setmetatable(on_enter, { __index = function() return fzf.actions.file_edit end })
+local M = {}
 
-local function jump_to_directory(opts)
+M.jump_to_directory = function(opts)
     opts = opts or {}
     opts.exec_empty_query = true
     opts.actions = { default = on_enter[opts.on_enter] }
@@ -32,34 +35,52 @@ local function jump_to_directory(opts)
             opts.jumper_max_results or jumper.config.jumper_max_results), opts)
 end
 
-local function jump_to_file(opts)
+M.jump_to_file = function(opts)
     opts = opts or {}
     opts.exec_empty_query = true
-    opts.actions = { ['default'] = fzf.actions.file_edit }
-    opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true }
+    opts.actions = {
+        ['default'] = fzf.actions.file_edit,
+        ['ctrl-g'] = {
+            fn = function(_)
+                M.find_in_files({ query = opts.grep_query, jumper_query = saved.query })
+            end,
+            reload = false
+        }
+    }
     opts.previewer = "builtin"
+    opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true, ['--header'] = '<Ctrl-g> to grep files' }
     fzf.fzf_live(
         make_f(opts.jumper_files or jumper.config.jumper_files,
             opts.jumper_max_results or jumper.config.jumper_max_results), opts
     )
 end
 
-local function find_in_files(opts)
+M.find_in_files = function(opts)
     opts = opts or {}
+    saved.grep_query = opts.query
     opts.actions = fzf.defaults.actions.files
+    opts.actions['ctrl-g'] = function(_)
+        M.jump_to_file({ query = opts.jumper_query, grep_query = saved.grep_query })
+    end
     opts.previewer = "builtin"
     opts.fn_transform = function(x)
         return fzf.make_entry.file(x, opts)
     end
-    local file_list = vim.fn.systemlist(jumper.make_command(jumper.config.jumper_files, nil, false, ''))
+
+    local cmd = jumper.make_command(jumper.config.jumper_files, nil, false, opts.jumper_query)
+    local file_list = vim.fn.systemlist(cmd)
     local files = " " .. table.concat(file_list, " ")
+
+    local header = '<Ctrl-g> to filter files.'
+    if opts.jumper_query and opts.jumper_query ~= '' then
+        header = header .. ' Current filter: ' .. opts.jumper_query
+    end
+    opts.fzf_opts = { ['--header'] = header }
+
     return fzf.fzf_live(function(q)
+        saved.grep_query = q
         return "rg --column --color=always -- " .. vim.fn.shellescape(q or '') .. files
     end, opts)
 end
 
-return {
-    jump_to_directory = jump_to_directory,
-    jump_to_file = jump_to_file,
-    find_in_files = find_in_files
-}
+return M

@@ -1,4 +1,5 @@
 -- default configuration
+local M = {}
 local config = {
     jumper_files = os.getenv("__JUMPER_FILES"),
     jumper_directories = os.getenv("__JUMPER_FOLDERS"),
@@ -7,14 +8,14 @@ local config = {
 }
 
 -- override default config
-local function set_preferences(opts)
+M.set_preferences = function(opts)
     for k, v in pairs(opts) do
         config[k] = v
     end
 end
 
 -- make jumper's command
-local function make_command(database_file, max_results, colors, prompt)
+M.make_command = function(database_file, max_results, colors, prompt)
     local cmd = { "jumper", "-f", database_file }
     if max_results ~= nil then
         table.insert(cmd, "-n")
@@ -23,7 +24,9 @@ local function make_command(database_file, max_results, colors, prompt)
     if colors then
         table.insert(cmd, "-c")
     end
-    table.insert(cmd, prompt)
+    if prompt ~= nil then
+        table.insert(cmd, prompt)
+    end
     return cmd
 end
 
@@ -67,24 +70,43 @@ vim.api.nvim_create_autocmd({ "DirChanged" }, {
 
 local function make_completion_function(database_file, max_results)
     return function(prompt, _, _)
-        return vim.fn.systemlist(make_command(database_file, max_results, false, prompt))
+        local cmd = M.make_command(database_file, max_results, false, prompt)
+        return vim.fn.systemlist(cmd)
+    end
+end
+
+local function z(opts)
+    local cmd = M.make_command(config.jumper_directories, 1, false, opts.args)
+    local dir = vim.fn.systemlist(cmd)
+    if dir[1] then
+        vim.cmd("cd " .. dir[1])
+        vim.print(dir[1])
+    else
+        vim.print("No match found.")
+    end
+end
+
+local function zf(opts)
+    local cmd = M.make_command(config.jumper_files, 1, false, opts.args)
+    local dir = vim.fn.systemlist(cmd)
+    if dir[1] then
+        vim.cmd("edit " .. dir[1])
+    else
+        vim.print("No match found.")
     end
 end
 
 -- Functions to jump from the command line:
-vim.api.nvim_create_user_command('Z', "cd `jumper -f " .. config.jumper_directories .. " -n 1 '<args>'`",
+vim.api.nvim_create_user_command('Z', z,
     {
         nargs = '+',
         complete = make_completion_function(config.jumper_directories, config.jumper_max_completion_results)
     })
-vim.api.nvim_create_user_command('Zf', "edit `jumper -f " .. config.jumper_files .. " -n 1 '<args>'`",
+vim.api.nvim_create_user_command('Zf', zf,
     {
         nargs = '+',
         complete = make_completion_function(config.jumper_files, config.jumper_max_completion_results)
     })
 
-return {
-    config = config,
-    set_preferences = set_preferences,
-    make_command = make_command,
-}
+M.config = config
+return M
