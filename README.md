@@ -3,11 +3,13 @@
 This is a Neovim plugin for [jumper](https://github.com/homerours/jumper), to quickly jump around files and folders. It allows to
 - keep track of the opened files and visited folders, keeping jumper's database updated.
 - jump with `:Zf <query>` / `:Z <query>` to files / folders matching `<query>`.
-- fuzzy-find jumper's files and directories using either [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim) as backend.
+- interactively find jumper's files and directories using either [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim) as backend.
 
 ## Installation
 
-For Lazy.nvim, use:
+First install [jumper](https://github.com/homerours/jumper), following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
+
+Then, for Lazy.nvim, use:
 ```lua
 {
     "homerours/jumper.nvim",
