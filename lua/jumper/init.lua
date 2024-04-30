@@ -1,3 +1,8 @@
+-- check if jumper is installed
+if vim.fn.executable("jumper") ~= 1 then
+    error("jumper is not installed. Please follow the instructions at https://github.com/homerours/jumper")
+end
+
 -- default configuration
 local M = {}
 local config = {
