@@ -3,10 +3,10 @@ local jumper = require("jumper")
 
 local saved = {}
 
-local function make_f(database_file, max_results)
+local function make_f(database_file, opts)
     return function(q)
         saved.query = q
-        local cmd = jumper.make_command(database_file, max_results, true, q)
+        local cmd = jumper.make_command(database_file, opts, q)
         return vim.fn.systemlist(cmd)
     end
 end
@@ -30,9 +30,7 @@ M.jump_to_directory = function(opts)
     if opts.previewer == false then
         opts.fzf_opts['--preview-window'] = 'hidden'
     end
-    fzf.fzf_live(
-        make_f(opts.jumper_directories or jumper.config.jumper_directories,
-            opts.jumper_max_results or jumper.config.jumper_max_results), opts)
+    fzf.fzf_live(make_f(jumper.config.jumper_directories, opts), opts)
 end
 
 M.jump_to_file = function(opts)
@@ -49,10 +47,7 @@ M.jump_to_file = function(opts)
     }
     opts.previewer = "builtin"
     opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true, ['--header'] = '<Ctrl-g> to grep files' }
-    fzf.fzf_live(
-        make_f(opts.jumper_files or jumper.config.jumper_files,
-            opts.jumper_max_results or jumper.config.jumper_max_results), opts
-    )
+    fzf.fzf_live(make_f(jumper.config.jumper_files, opts), opts)
 end
 
 M.find_in_files = function(opts)
@@ -67,7 +62,8 @@ M.find_in_files = function(opts)
         return fzf.make_entry.file(x, opts)
     end
 
-    local cmd = jumper.make_command(jumper.config.jumper_files, nil, false, opts.jumper_query)
+    local list_opts = { jumper_max_results = 'no_limit', jumper_colors = false }
+    local cmd = jumper.make_command(jumper.config.jumper_files, list_opts, opts.jumper_query)
     local file_list = vim.fn.systemlist(cmd)
     local files = " " .. table.concat(file_list, " ")
 

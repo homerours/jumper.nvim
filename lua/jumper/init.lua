@@ -10,8 +10,13 @@ local config = {
     jumper_directories = os.getenv("__JUMPER_FOLDERS"),
     jumper_max_results = 300,
     jumper_max_completion_results = 12,
+    jumper_colors = true,
+    jumper_beta = 1.0,
+    jumper_syntax = 'extended',
+    jumper_case_sensitivity = 'default'
 }
 
+local z_config = { jumper_max_results = 1, jumper_colors = false }
 
 -- override default config
 M.set_preferences = function(opts)
@@ -21,15 +26,30 @@ M.set_preferences = function(opts)
 end
 
 -- make jumper's command
-M.make_command = function(database_file, max_results, colors, prompt)
+M.make_command = function(database_file, opts, prompt)
     local cmd = { "jumper", "-f", database_file }
-    if max_results ~= nil then
+
+    local n = vim.F.if_nil(opts.jumper_max_results, config.jumper_max_results)
+    if n ~= 'no_limit' then
         table.insert(cmd, "-n")
-        table.insert(cmd, max_results)
+        table.insert(cmd, n)
     end
+
+    local colors = vim.F.if_nil(opts.jumper_colors, config.jumper_colors)
     if colors then
         table.insert(cmd, "-c")
     end
+
+    local syntax = vim.F.if_nil(opts.jumper_syntax, config.jumper_syntax)
+    table.insert(cmd, "--syntax=" .. syntax)
+
+    local case_sensitivity = vim.F.if_nil(opts.jumper_case_sensitivity, config.jumper_case_sensitivity)
+    if case_sensitivity == 'sensitive' then
+        table.insert(cmd, '-S')
+    elseif case_sensitivity == 'insensitive' then
+        table.insert(cmd, '-I')
+    end
+
     if prompt ~= nil then
         table.insert(cmd, prompt)
     end
@@ -75,13 +95,13 @@ vim.api.nvim_create_autocmd({ "DirChanged" }, {
 
 local function make_completion_function(database_file, max_results)
     return function(prompt, _, _)
-        local cmd = M.make_command(database_file, max_results, false, prompt)
+        local cmd = M.make_command(database_file, { jumper_max_results = max_results, jumper_colors = false }, prompt)
         return vim.fn.systemlist(cmd)
     end
 end
 
 local function z(opts)
-    local cmd = M.make_command(config.jumper_directories, 1, false, opts.args)
+    local cmd = M.make_command(config.jumper_directories, z_config, opts.args)
     local dir = vim.fn.systemlist(cmd)
     if dir[1] then
         vim.cmd("cd " .. dir[1])
@@ -92,7 +112,7 @@ local function z(opts)
 end
 
 local function zf(opts)
-    local cmd = M.make_command(config.jumper_files, 1, false, opts.args)
+    local cmd = M.make_command(config.jumper_files, z_config, opts.args)
     local dir = vim.fn.systemlist(cmd)
     if dir[1] then
         vim.cmd("edit " .. dir[1])

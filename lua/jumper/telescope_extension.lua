@@ -9,15 +9,6 @@ local conf = require("telescope.config").values
 local jumper = require("jumper")
 local state = {}
 
-local function add_missing(dst, src)
-    for k, v in pairs(src) do
-        if dst[k] == nil then
-            dst[k] = v
-        end
-    end
-    return dst
-end
-
 -- parse the colors from jumper's outputs
 local function parse_ansi_colors(line)
     local chunks = {}
@@ -79,10 +70,10 @@ local on_enter_directory = {
 local M = {}
 
 M.jump_to_directory = function(opts)
-    opts = add_missing(opts or {}, jumper.config)
+    opts = opts or {}
 
     local directory_finder = finders.new_job(function(prompt)
-        return jumper.make_command(opts.jumper_directories, opts.jumper_max_results, true, prompt)
+        return jumper.make_command(jumper.config.jumper_directories, opts, prompt)
     end, entry_maker, {}, '')
 
     pickers.new(opts, {
@@ -100,11 +91,11 @@ M.jump_to_directory = function(opts)
 end
 
 M.jump_to_file = function(opts)
-    opts = add_missing(opts or {}, jumper.config)
+    opts = opts or {}
 
     local file_finder = finders.new_job(function(prompt)
         state.jumper_query = prompt
-        return jumper.make_command(opts.jumper_files, opts.jumper_max_results, true, prompt)
+        return jumper.make_command(jumper.config.jumper_files, opts, prompt)
     end, entry_maker, {}, '')
 
     pickers.new(opts, {
@@ -121,9 +112,10 @@ M.jump_to_file = function(opts)
 end
 
 M.find_in_files = function(opts)
-    opts = add_missing(opts or {}, jumper.config)
+    opts = opts or {}
 
-    local file_list = vim.fn.systemlist(jumper.make_command(opts.jumper_files, nil, false, opts.jumper_query or ''))
+    local list_opts = { jumper_max_results = 'no_limit', jumper_colors = false }
+    local file_list = vim.fn.systemlist(jumper.make_command(jumper.config.jumper_files, list_opts, opts.jumper_query))
 
     local grep_finder = finders.new_job(function(prompt)
         state.grep_query = prompt
