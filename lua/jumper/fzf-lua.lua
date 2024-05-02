@@ -75,7 +75,7 @@ M.find_in_files = function(opts)
 
     return fzf.fzf_live(function(q)
         saved.grep_query = q
-        return "rg --column --color=always -- " .. vim.fn.shellescape(q or '') .. files
+        return "rg --column --color=always -- " .. vim.fn.shellescape(q or '') .. files .. " 2>/dev/null"
     end, opts)
 end
 
