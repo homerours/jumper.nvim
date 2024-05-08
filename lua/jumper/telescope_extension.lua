@@ -4,10 +4,16 @@ local make_entry = require("telescope.make_entry")
 local previewers = require("telescope.previewers")
 local actions = require("telescope.actions")
 local actions_state = require("telescope.actions.state")
+local telescope_state = require("telescope.state")
 local conf = require("telescope.config").values
 
 local jumper = require("jumper")
 local state = {}
+
+local function set_results_width()
+    local status = telescope_state.get_status(vim.api.nvim_get_current_buf())
+    state.results_width = vim.api.nvim_win_get_width(status.results_win)
+end
 
 -- parse the colors from jumper's outputs
 local function parse_ansi_colors(line)
@@ -32,6 +38,20 @@ local function parse_ansi_colors(line)
 end
 
 local function make_display(entry)
+    if state.results_width ~= nil then
+        local delta = string.len(entry.value) - state.results_width + 3
+        if delta > 0 then
+            local display_path = "..." .. string.sub(entry.value, delta + 3)
+            local new_highlights = {}
+            for _, hl in ipairs(entry.highlights) do
+                if hl[1][2] > delta then
+                    local hl_new = { { math.max(hl[1][1] - delta + 1, 0), hl[1][2] - delta + 1 }, hl[2] }
+                    table.insert(new_highlights, hl_new)
+                end
+            end
+            return display_path, new_highlights
+        end
+    end
     return entry.value, entry.highlights
 end
 
@@ -49,7 +69,7 @@ end
 local ls_previewer = previewers.new_termopen_previewer({
     title = "Contents",
     get_command = function(entry)
-        return { 'ls', '-1UpC', '--color=always', entry.value }
+        return { 'ls', '-1UpC', '--color=always', vim.fs.normalize(entry.value) }
     end
 })
 
@@ -73,6 +93,7 @@ M.jump_to_directory = function(opts)
     opts = opts or {}
 
     local directory_finder = finders.new_job(function(prompt)
+        set_results_width()
         return jumper.make_command(jumper.config.jumper_directories, opts, prompt)
     end, entry_maker, {}, '')
 
@@ -95,6 +116,7 @@ M.jump_to_file = function(opts)
 
     local file_finder = finders.new_job(function(prompt)
         state.jumper_query = prompt
+        set_results_width()
         return jumper.make_command(jumper.config.jumper_files, opts, prompt)
     end, entry_maker, {}, '')
 

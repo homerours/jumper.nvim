@@ -22,11 +22,16 @@ local on_enter = {
 setmetatable(on_enter, { __index = function() return fzf.actions.file_edit end })
 local M = {}
 
+local function ls_previewer(items)
+    return "ls -1UpC --color=always " .. vim.fs.normalize(items[1])
+end
+
 M.jump_to_directory = function(opts)
     opts = opts or {}
     opts.exec_empty_query = true
     opts.actions = { default = on_enter[opts.on_enter] }
-    opts.fzf_opts = { ['--preview'] = 'ls -1UpC --color=always {}', ['--keep-right'] = true, ['--ansi'] = true }
+    opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true }
+    opts.preview = { type = 'cmd', fn = ls_previewer }
     if opts.previewer == false then
         opts.fzf_opts['--preview-window'] = 'hidden'
     end

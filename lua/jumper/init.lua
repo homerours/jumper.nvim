@@ -11,6 +11,7 @@ local config = {
     jumper_max_results = 300,
     jumper_max_completion_results = 12,
     jumper_colors = true,
+    jumper_home_tilde = true,
     jumper_beta = 1.0,
     jumper_syntax = 'extended',
     jumper_case_sensitivity = 'default'
@@ -38,6 +39,11 @@ M.make_command = function(database_file, opts, prompt)
     local colors = vim.F.if_nil(opts.jumper_colors, config.jumper_colors)
     if colors then
         table.insert(cmd, "-c")
+    end
+
+    local home_tilde = vim.F.if_nil(opts.jumper_home_tilde, config.jumper_home_tilde)
+    if home_tilde then
+        table.insert(cmd, "-H")
     end
 
     local syntax = vim.F.if_nil(opts.jumper_syntax, config.jumper_syntax)
@@ -89,7 +95,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 vim.api.nvim_create_autocmd({ "DirChanged" }, {
     pattern = { "*" },
     callback = function()
-        update_database(config.jumper_directories, vim.loop.cwd(), 1.0)
+        update_database(config.jumper_directories, vim.uv.cwd(), 1.0)
     end
 })
 
@@ -101,7 +107,7 @@ local function make_completion_function(database_file, max_results)
 end
 
 local function z(opts)
-    local cmd = M.make_command(config.jumper_directories, z_config, opts.args)
+    local cmd = M.make_command(config.jumper_directories, z_config, vim.fs.normalize(opts.args))
     local dir = vim.fn.systemlist(cmd)
     if dir[1] then
         vim.cmd("cd " .. dir[1])
@@ -112,7 +118,7 @@ local function z(opts)
 end
 
 local function zf(opts)
-    local cmd = M.make_command(config.jumper_files, z_config, opts.args)
+    local cmd = M.make_command(config.jumper_files, z_config, vim.fs.normalize(opts.args))
     local dir = vim.fn.systemlist(cmd)
     if dir[1] then
         vim.cmd("edit " .. dir[1])
