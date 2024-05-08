@@ -12,6 +12,7 @@ local config = {
     jumper_max_completion_results = 12,
     jumper_colors = true,
     jumper_home_tilde = true,
+    jumper_relative = false,
     jumper_beta = 1.0,
     jumper_syntax = 'extended',
     jumper_case_sensitivity = 'default'
@@ -44,6 +45,11 @@ M.make_command = function(database_file, opts, prompt)
     local home_tilde = vim.F.if_nil(opts.jumper_home_tilde, config.jumper_home_tilde)
     if home_tilde then
         table.insert(cmd, "-H")
+    end
+
+    local relative = vim.F.if_nil(opts.jumper_relative, config.jumper_relative)
+    if relative then
+        table.insert(cmd, "-r")
     end
 
     local syntax = vim.F.if_nil(opts.jumper_syntax, config.jumper_syntax)
