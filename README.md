@@ -66,11 +66,14 @@ Here is an example of configuration, using Telescope as backend:
 
         vim.keymap.set('n', '<leader>fu', jumper.find_in_files)
 
+        -- Defaults should be good enough, one typically does not need the following:
         require("jumper").set_preferences({
             jumper_max_results = 200,           -- maximum number of results to show in Telescope. Default: 300
             jumper_max_completion_results = 10, -- maximum number of results to show when completing :Z and :Zf commands. Default: 12
-            jumper_beta = 0.5,                  -- "beta" used for ranking
+            jumper_beta = 0.9,                  -- "beta" used for ranking (default: 1.0)
             jumper_syntax = "fuzzy",            -- default = "extended"
+            jumper_home_tilde = true,           -- substitute $HOME with ~/ in the results (default: true)
+            jumper_relative = false,            -- outputs relative pathes (default: false)
             jumper_case_sensitivity = "insensitive", 
 
             -- By default, jumper records files and directories' visits in the files $__JUMPER_FILES and $__JUMPER_FOLDERS (which are ~/.jfiles and ~/.jfolders by default)
