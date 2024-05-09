@@ -52,13 +52,13 @@ This allows to "live-grep" the files of jumper's database.
 
 ## Configuration example
 
-Here is an example of configuration, using Telescope as backend:
+Here is an example of configuration, using fzf-lua as backend:
 ```lua
 {
     "homerours/jumper.nvim",
-    dependencies = { 'nvim-telescope/telescope.nvim' },
+    dependencies = { "ibhagwan/fzf-lua" },
     config = function()
-        local jumper = require("telescope").extensions.jumper
+        local jumper = require("jumper.fzf-lua")
 
         vim.keymap.set('n', '<c-y>', function() jumper.jump_to_directory({ on_enter = 'find_files'}) end)
 
@@ -85,6 +85,8 @@ Here is an example of configuration, using Telescope as backend:
 }
 ```
 
-## Credits
+## Thanks
+Big thanks to [@ibhagwan](https://github.com/ibhagwan), developer of [fzf-lua](https://github.com/ibhagwan/fzf-lua) who has been super helpful in answering my questions about his plugin.
+Credits to:
 - [z](https://github.com/rupa/z)
 - [telescope-z](https://github.com/nvim-telescope/telescope-z.nvim)
