@@ -136,7 +136,7 @@ end
 M.find_in_files = function(opts)
     opts = opts or {}
 
-    local list_opts = { jumper_max_results = 'no_limit', jumper_colors = false }
+    local list_opts = { jumper_max_results = 'no_limit', jumper_colors = false, jumper_home_tilde = false }
     local file_list = vim.fn.systemlist(jumper.make_command(jumper.config.jumper_files, list_opts, opts.jumper_query))
 
     local grep_finder = finders.new_job(function(prompt)
