@@ -3,6 +3,8 @@ if vim.fn.executable("jumper") ~= 1 then
     error("jumper is not installed. Please follow the instructions at https://github.com/homerours/jumper")
 end
 
+local uv = vim.uv or vim.loop
+
 -- default configuration
 local M = {}
 local config = {
@@ -101,7 +103,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 vim.api.nvim_create_autocmd({ "DirChanged" }, {
     pattern = { "*" },
     callback = function()
-        update_database(config.jumper_directories, vim.uv.cwd(), 1.0)
+        update_database(config.jumper_directories, uv.cwd(), 1.0)
     end
 })
 
