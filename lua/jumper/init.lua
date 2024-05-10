@@ -130,6 +130,7 @@ local function zf(opts)
     local dir = vim.fn.systemlist(cmd)
     if dir[1] then
         vim.cmd("edit " .. dir[1])
+        vim.print(dir[1])
     else
         vim.print("No match found.")
     end
