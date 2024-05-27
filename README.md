@@ -67,7 +67,7 @@ Here is an example of configuration, using fzf-lua as backend:
         vim.keymap.set('n', '<leader>fu', jumper.find_in_files)
 
         -- Defaults should be good enough, one typically does not need the following:
-        require("jumper").set_preferences({
+        require("jumper").setup({
             jumper_max_results = 200,           -- maximum number of results to show in Telescope. Default: 300
             jumper_max_completion_results = 10, -- maximum number of results to show when completing :Z and :Zf commands. Default: 12
             jumper_beta = 0.9,                  -- "beta" used for ranking (default: 1.0)
