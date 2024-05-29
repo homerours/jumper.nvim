@@ -13,10 +13,16 @@ M.config = {
     jumper_case_sensitivity = 'default'
 }
 
+M.unmatched_config = {}
+
 -- override default M.config
 M.setup = function(opts)
     for k, v in pairs(opts) do
-        M.config[k] = v
+        if M.config[k] ~= nil then
+            M.config[k] = v
+        else
+            M.unmatched_config[k] = v
+        end
     end
 end
 
