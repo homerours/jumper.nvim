@@ -39,8 +39,8 @@ Then, jumper provides 3 "pickers" in order to interactively find files and folde
 #### `jump_to_directory`
 
 This allows to pick directories from jumper's database. By default, pressing `enter` on a directory will open that directory in the default file explorer (`netrw`, `oil`...). This can be overriden using the `on_enter` key of the options supplied to the finder:
-- `jumper.jump_to_directories({on_enter = 'find_files'})` will launch a files' search in the selected directory.
-- `jumper.jump_to_directories({on_enter = 'change_cwd'})` will update the current working directory to the selected entry.
+- `jumper.jump_to_directory({on_enter = 'find_files'})` will launch a files' search in the selected directory.
+- `jumper.jump_to_directory({on_enter = 'change_cwd'})` will update the current working directory to the selected entry.
 
 #### `jump_to_file`
 
