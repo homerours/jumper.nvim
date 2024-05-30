@@ -7,9 +7,24 @@ This is a Neovim plugin for [jumper](https://github.com/homerours/jumper), to qu
 
 ## Installation
 
-First install [jumper](https://github.com/homerours/jumper), following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
+1. Install the binary [jumper](https://github.com/homerours/jumper), following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
+2. Install `homerours/jumper.nvim` with your plugin manager.
+3. (Optional, requires [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim)) Define keymaps for the interactive pickers to jump to files and directories. For lua configuration, use
+```lua
+vim.keymap.set('n', '<c-y>', require("jumper.fzf-lua").jump_to_directory)
+vim.keymap.set('n', '<c-u>', require("jumper.fzf-lua").jump_to_file)
+vim.keymap.set('n', '<leader>fu', require("jumper.fzf-lua").find_in_files)
+```
+or for vimscript, use
+```vim
+nnoremap <c-y> <cmd>lua require("jumper.fzf-lua").jump_to_directory()<cr>
+nnoremap <c-u> <cmd>lua require("jumper.fzf-lua").jump_to_file()<cr>
+nnoremap <leader>fu <cmd>lua require("jumper.fzf-lua").find_in_files()<cr>
+```
+`require("jumper.fzf-lua")` has to be replaced by `require("telescope").extensions.jumper` if using Telescope's backend.
 
-Then, for Lazy.nvim, use:
+
+Using for instance Lazy.nvim, steps 2 and 3 can be achieved with
 ```lua
 {
     "homerours/jumper.nvim",
@@ -39,8 +54,8 @@ Then, jumper provides 3 "pickers" in order to interactively find files and folde
 #### `jump_to_directory`
 
 This allows to pick directories from jumper's database. By default, pressing `enter` on a directory will open that directory in the default file explorer (`netrw`, `oil`...). This can be overriden using the `on_enter` key of the options supplied to the finder:
-- `jumper.jump_to_directory({on_enter = 'find_files'})` will launch a files' search in the selected directory.
-- `jumper.jump_to_directory({on_enter = 'change_cwd'})` will update the current working directory to the selected entry.
+- `jump_to_directory({on_enter = 'find_files'})` will launch a files' search in the selected directory.
+- `jump_to_directory({on_enter = 'change_cwd'})` will update the current working directory to the selected entry.
 
 #### `jump_to_file`
 
@@ -87,6 +102,4 @@ Here is an example of configuration, using fzf-lua as backend:
 
 ## Thanks
 Big thanks to [@ibhagwan](https://github.com/ibhagwan), developer of [fzf-lua](https://github.com/ibhagwan/fzf-lua) who has been super helpful in answering my questions about his plugin.
-Credits to:
-- [z](https://github.com/rupa/z)
-- [telescope-z](https://github.com/nvim-telescope/telescope-z.nvim)
+Credits to [z](https://github.com/rupa/z) and [telescope-z](https://github.com/nvim-telescope/telescope-z.nvim)
