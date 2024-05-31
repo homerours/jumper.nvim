@@ -5,9 +5,13 @@ This is a Neovim plugin for [jumper](https://github.com/homerours/jumper), to qu
 - jump with `:Zf <query>` / `:Z <query>` to files / folders matching `<query>`.
 - interactively find jumper's files and directories using either [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim) as backend.
 
+
+https://github.com/homerours/jumper.nvim/assets/12702557/8c053590-09ae-4f08-a050-0a11c97c22c7
+
+
 ## Installation
 
-1. Install the binary [jumper](https://github.com/homerours/jumper), following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
+1. Install [jumper](https://github.com/homerours/jumper)'s binary, following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
 2. Install `homerours/jumper.nvim` with your plugin manager.
 3. (Optional, requires [fzf-lua](https://github.com/ibhagwan/fzf-lua) or [Telescope](https://github.com/nvim-telescope/telescope.nvim)) Define keymaps for the interactive pickers to jump to files and directories. For lua configuration, use
 ```lua
