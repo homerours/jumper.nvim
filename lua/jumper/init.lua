@@ -7,6 +7,7 @@ M.config = {
     jumper_max_completion_results = 12,
     jumper_colors = true,
     jumper_home_tilde = true,
+    jumper_orderless = true,
     jumper_relative = false,
     jumper_beta = 1.0,
     jumper_syntax = 'extended',
@@ -44,6 +45,11 @@ M.make_command = function(database_file, opts, prompt)
     local home_tilde = vim.F.if_nil(opts.jumper_home_tilde, M.config.jumper_home_tilde)
     if home_tilde then
         table.insert(cmd, "-H")
+    end
+
+    local orderless = vim.F.if_nil(opts.jumper_orderless, M.config.jumper_orderless)
+    if orderless then
+        table.insert(cmd, "-o")
     end
 
     local relative = vim.F.if_nil(opts.jumper_relative, M.config.jumper_relative)
