@@ -94,7 +94,7 @@ M.jump_to_directory = function(opts)
 
     local directory_finder = finders.new_job(function(prompt)
         set_results_width()
-        return jumper.make_command(jumper.config.jumper_directories, opts, prompt)
+        return jumper.make_command("directories", opts, prompt)
     end, entry_maker, {}, '')
 
     pickers.new(opts, {
@@ -117,7 +117,7 @@ M.jump_to_file = function(opts)
     local file_finder = finders.new_job(function(prompt)
         state.jumper_query = prompt
         set_results_width()
-        return jumper.make_command(jumper.config.jumper_files, opts, prompt)
+        return jumper.make_command("files", opts, prompt)
     end, entry_maker, {}, '')
 
     pickers.new(opts, {
@@ -137,7 +137,7 @@ M.find_in_files = function(opts)
     opts = opts or {}
 
     local list_opts = { jumper_max_results = 'no_limit', jumper_colors = false, jumper_home_tilde = false }
-    local file_list = vim.fn.systemlist(jumper.make_command(jumper.config.jumper_files, list_opts, opts.jumper_query))
+    local file_list = vim.fn.systemlist(jumper.make_command("files", list_opts, opts.jumper_query))
 
     local grep_finder = finders.new_job(function(prompt)
         state.grep_query = prompt

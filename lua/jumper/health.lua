@@ -26,14 +26,13 @@ M.check = function()
 
     if not fzf_lua_installed and not telescope_installed then
         vim.health.warn(
-        "Neither of fzf-lua or telescope is installed.\n You may want to install one of them for interactive queries.")
+            "Neither of fzf-lua or telescope is installed.\n You may want to install one of them for interactive queries.")
     end
 
-    local j = require('jumper')
-    vim.health.info("Files' database:         " .. j.config.jumper_files)
-    vim.health.info("Directories' database:   " .. j.config.jumper_directories)
+    local status = vim.fn.system("jumper status -n 0")
+    vim.health.info("Output of 'jumper status':\n" .. status)
 
-    for k, _ in pairs(j.unmatched_config) do
+    for k, _ in pairs(require('jumper').unmatched_config) do
         vim.health.warn("Unmatched option: " .. k)
     end
 end

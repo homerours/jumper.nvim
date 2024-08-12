@@ -1,8 +1,6 @@
 -- default M.configuration
 local M = {}
 M.config = {
-    jumper_files = os.getenv("__JUMPER_FILES"),
-    jumper_directories = os.getenv("__JUMPER_FOLDERS"),
     jumper_max_results = 300,
     jumper_max_completion_results = 12,
     jumper_colors = true,
@@ -28,8 +26,8 @@ M.setup = function(opts)
 end
 
 -- make jumper's command
-M.make_command = function(database_file, opts, prompt)
-    local cmd = { "jumper", "-f", database_file }
+M.make_command = function(type, opts, prompt)
+    local cmd = { "jumper", "find", "--type=" .. type}
 
     local n = vim.F.if_nil(opts.jumper_max_results, M.config.jumper_max_results)
     if n ~= 'no_limit' then

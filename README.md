@@ -98,13 +98,6 @@ Here is an example of configuration, using Lazy.nvim and fzf-lua as backend:
             jumper_home_tilde = true,           -- substitute $HOME with ~/ in the results (default: true)
             jumper_relative = false,            -- outputs relative pathes (default: false)
             jumper_case_sensitivity = "insensitive", 
-
-            -- By default, jumper records files and directories' visits in the files 
-            -- $__JUMPER_FILES and $__JUMPER_FOLDERS
-            -- (which are ~/.jfiles and ~/.jfolders by default)
-            -- You can still provide other files to use here:
-            jumper_files = '/path/to/a/very/custom/file_database',
-            jumper_directories = '/path/to/a/very/custom/directory_database',
         })
     end
 }
