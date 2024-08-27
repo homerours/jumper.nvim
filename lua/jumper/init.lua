@@ -7,6 +7,7 @@ M.config = {
     jumper_home_tilde = true,
     jumper_orderless = true,
     jumper_relative = false,
+    jumper_existing = false,
     jumper_beta = 1.0,
     jumper_syntax = 'extended',
     jumper_case_sensitivity = 'default'
@@ -25,6 +26,12 @@ M.setup = function(opts)
     end
 end
 
+local function add_flag(cmd, opts, key, flag)
+    if vim.F.if_nil(opts[key], M.config[key]) then
+        table.insert(cmd, flag)
+    end
+end
+
 -- make jumper's command
 M.make_command = function(type, opts, prompt)
     local cmd = { "jumper", "find", "--type=" .. type}
@@ -35,25 +42,11 @@ M.make_command = function(type, opts, prompt)
         table.insert(cmd, n)
     end
 
-    local colors = vim.F.if_nil(opts.jumper_colors, M.config.jumper_colors)
-    if colors then
-        table.insert(cmd, "-c")
-    end
-
-    local home_tilde = vim.F.if_nil(opts.jumper_home_tilde, M.config.jumper_home_tilde)
-    if home_tilde then
-        table.insert(cmd, "-H")
-    end
-
-    local orderless = vim.F.if_nil(opts.jumper_orderless, M.config.jumper_orderless)
-    if orderless then
-        table.insert(cmd, "-o")
-    end
-
-    local relative = vim.F.if_nil(opts.jumper_relative, M.config.jumper_relative)
-    if relative then
-        table.insert(cmd, "-r")
-    end
+	add_flag(cmd, opts, "jumper_colors", "-c")
+	add_flag(cmd, opts, "jumper_home_tilde", "-H")
+	add_flag(cmd, opts, "jumper_orderless", "-o")
+	add_flag(cmd, opts, "jumper_relative", "-r")
+	add_flag(cmd, opts, "jumper_existing", "-e")
 
     local syntax = vim.F.if_nil(opts.jumper_syntax, M.config.jumper_syntax)
     table.insert(cmd, "--syntax=" .. syntax)
