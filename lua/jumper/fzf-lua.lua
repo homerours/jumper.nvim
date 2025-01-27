@@ -3,6 +3,21 @@ local jumper = require("jumper")
 
 local saved = {}
 
+local default_file_actions = {
+    ['default'] = fzf.actions.file_edit,
+    ['ctrl-v'] = fzf.actions.file_vsplit,
+    ['ctrl-s'] = fzf.actions.file_split,
+    ['ctrl-t'] = fzf.actions.file_tabedit
+}
+
+local function add_defaults(config, defaults)
+    for k, v in pairs(defaults) do
+        if config[k] == nil then
+            config[k] = v
+        end
+    end
+end
+
 local function make_f(type, opts)
     return function(q)
         saved.query = q
@@ -41,14 +56,13 @@ end
 M.jump_to_file = function(opts)
     opts = opts or {}
     opts.exec_empty_query = true
-    opts.actions = {
-        ['default'] = fzf.actions.file_edit,
-        ['ctrl-g'] = {
-            fn = function(_)
-                M.find_in_files({ query = opts.grep_query, jumper_query = saved.query })
-            end,
-            reload = false
-        }
+    opts.actions = opts.actions or {}
+    add_defaults(opts.actions, default_file_actions)
+    opts.actions['ctrl-g'] = {
+        fn = function(_)
+            M.find_in_files({ query = opts.grep_query, jumper_query = saved.query })
+        end,
+        reload = false
     }
     opts.previewer = "builtin"
     opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true, ['--header'] = '<Ctrl-g> to grep files' }
