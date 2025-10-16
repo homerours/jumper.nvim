@@ -11,8 +11,8 @@ end
 
 local function make_f(type, opts)
     return function(q)
-        saved.query = q
-        local cmd = jumper.make_command(type, opts, q)
+        saved.query = q[1]
+        local cmd = jumper.make_command(type, opts, q[1])
         local results = vim.fn.systemlist(cmd)
         if opts.file_icons then
             return add_icons(results, opts)
@@ -95,8 +95,8 @@ M.find_in_files = function(opts)
     opts.fzf_opts = { ['--header'] = header }
 
     return fzf.fzf_live(function(q)
-        saved.grep_query = q
-        return "rg --column --color=always -- " .. vim.fn.shellescape(q or '') .. files .. " 2>/dev/null"
+        saved.grep_query = q[1]
+        return "rg --column --color=always -- " .. vim.fn.shellescape(q[1] or '') .. files .. " 2>/dev/null"
     end, opts)
 end
 
