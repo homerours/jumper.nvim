@@ -3,8 +3,9 @@ vim.g.loaded_jumper = 1
 
 -- check if jumper is installed
 if vim.fn.executable("jumper") ~= 1 then
-    vim.api.nvim_err_writeln(
-        "jumper is not installed. Please follow the instructions at https://github.com/homerours/jumper")
+    vim.notify(
+        "jumper is not installed. Please follow the instructions at https://github.com/homerours/jumper",
+        vim.log.levels.ERROR)
     return
 end
 
@@ -33,7 +34,7 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     pattern = { "*" },
     callback = function(ev)
-        local buf_modified = vim.api.nvim_buf_get_option(ev.buf, 'modified')
+        local buf_modified = vim.bo[ev.buf].modified
         if buf_modified then
             local filename = vim.api.nvim_buf_get_name(ev.buf)
             update_database(filename, 0.3)
