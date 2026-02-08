@@ -4,9 +4,9 @@ local jumper = require("jumper")
 local saved = {}
 
 local function add_icons(results, opts)
-    return  vim.tbl_map(function(x)
+    return vim.tbl_map(function(x)
         return fzf.make_entry.file(x, opts)
-    end,results)
+    end, results)
 end
 
 local function make_f(type, opts)
@@ -47,6 +47,7 @@ M.jump_to_directory = function(opts)
     opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true }
     opts = fzf.config.normalize_opts(opts, "files")
     opts.preview = { type = 'cmd', fn = ls_previewer }
+    opts.cwd_prompt = false
     if opts.previewer == false then
         opts.fzf_opts['--preview-window'] = 'hidden'
     else
@@ -67,6 +68,7 @@ M.jump_to_file = function(opts)
     }
     opts.fzf_opts = { ['--keep-right'] = true, ['--ansi'] = true, ['--header'] = '<Ctrl-g> to grep files' }
     opts = fzf.config.normalize_opts(opts, "files")
+    opts.cwd_prompt = false
     fzf.fzf_live(make_f("files", opts), opts)
 end
 
@@ -94,6 +96,7 @@ M.find_in_files = function(opts)
     end
     opts.fzf_opts = { ['--header'] = header }
 
+    opts.cwd_prompt = false
     return fzf.fzf_live(function(q)
         saved.grep_query = q[1]
         return "rg --column --color=always -- " .. vim.fn.shellescape(q[1] or '') .. files .. " 2>/dev/null"
