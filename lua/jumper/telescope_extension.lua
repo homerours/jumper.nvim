@@ -17,24 +17,34 @@ end
 
 -- parse the colors from jumper's outputs
 local function parse_ansi_colors(line)
-    local chunks = {}
     local highlights = {}
-    local color = '\x1b[32m'
-    local reset = '\x1b[0m'
-    local offset = 1
-    local hl_offset = 5
-    while true do
-        local x1, y1 = string.find(line, color, offset, true)
-        local x2, y2 = string.find(line, reset, offset, true)
-        if x1 == nil then break end
-        table.insert(chunks, string.sub(line, offset, x1 - 1))
-        table.insert(chunks, string.sub(line, y1 + 1, x2 - 1))
-        table.insert(highlights, { { y1 - hl_offset, x2 - 1 - hl_offset }, "Identifier" })
-        hl_offset = hl_offset + 9
-        offset = y2 + 1
+    local parts = {}
+    local pos = 1
+    local output_offset = 0
+
+    -- Process each ANSI colored segment
+    for match_start, highlighted, match_end in line:gmatch("()\x1b%[32m([^\x1b]+)\x1b%[0m()") do
+        -- Add plain text before the match
+        if match_start > pos then
+            local plain_text = line:sub(pos, match_start - 1)
+            table.insert(parts, plain_text)
+            output_offset = output_offset + #plain_text
+        end
+
+        -- Add highlighted text and record its position
+        table.insert(parts, highlighted)
+        table.insert(highlights, { { output_offset, output_offset + #highlighted }, "Identifier" })
+        output_offset = output_offset + #highlighted
+
+        pos = match_end
     end
-    table.insert(chunks, string.sub(line, offset, -1))
-    return table.concat(chunks), highlights
+
+    -- Add any remaining text after the last match
+    if pos <= #line then
+        table.insert(parts, line:sub(pos))
+    end
+
+    return table.concat(parts), highlights
 end
 
 local function make_display(entry)
