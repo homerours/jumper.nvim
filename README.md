@@ -9,6 +9,11 @@ This is a Neovim plugin for [jumper](https://github.com/homerours/jumper) to ope
 https://github.com/homerours/jumper.nvim/assets/12702557/8c053590-09ae-4f08-a050-0a11c97c22c7
 
 
+# Requirements
+
+- **Neovim ≥ 0.9.0**
+- [jumper](https://github.com/homerours/jumper) binary
+
 # Installation
 
 1. Install [jumper](https://github.com/homerours/jumper)'s binary, following [these instructions](https://github.com/homerours/jumper?tab=readme-ov-file#installation).
